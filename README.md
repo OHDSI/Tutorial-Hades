@@ -6,7 +6,7 @@ This repository contains materials for tutorials on the [Health Analytics Data-t
 
 ## Exercise 1: Install HADES
 
-Follow the instructions on the HADES website on [how to set up R](https://ohdsi.github.io/Hades/rSetup.html) and [how to install HADES](https://ohdsi.github.io/Hades/installingHades.html.
+Follow the instructions on the HADES website on [how to set up R](https://ohdsi.github.io/Hades/rSetup.html) and [how to install HADES](https://ohdsi.github.io/Hades/installingHades.html).
 
 ## Exercise 2: Query the CDM using OhdsiSql
 
