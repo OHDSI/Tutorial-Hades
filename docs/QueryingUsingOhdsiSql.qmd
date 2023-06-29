@@ -1,9 +1,8 @@
 ---
 title: "Querying the OMOP CDM with OHDSI-SQL"
 format: html
-editor: visual
+editor: source
 toc: true
-ouput-dir: ../docs
 ---
 
 ## OHDSI-SQL
@@ -130,10 +129,8 @@ renderTranslateQuerySql(
 Now use what you've learned so far to answer the following questions:
 
 1.  What is the minimum, maximum, and mean length (in days) of observation? (Hint: you can use the [`DATEDIFF`](https://learn.microsoft.com/en-us/sql/t-sql/functions/datediff-transact-sql?view=sql-server-ver16) function to compute the time between two dates.)
-
-2.  During which period in time (calender start and end date) did people start a celecoxib prescription?
-
-3.  How many people have at least one prescription of celecoxib. (Note: there's an easy way to do this, using `drug_era`, and a harder way using `drug_exposure` and `concept_ancestor`. Can you do both?
+2.  How many people have at least one prescription of celecoxib. (Note: there's an easy way to do this, using `drug_era`, and a harder way using `drug_exposure` and `concept_ancestor`. Can you do both?)
+3.  During which period in time (calender start and end date) did people start a celecoxib prescription?
 
 ## Answers
 
@@ -154,27 +151,6 @@ FROM (
   ) AS observation_length
   FROM @cdm.observation_period
 ) tmp;
-"
-
-renderTranslateQuerySql(
-  connection = connection,
-  sql = sql,
-  cdm = cdmDatabaseSchema
-)
-```
-
-### 3. During which calendar dates did people start a celecoxib prescription?
-
-Because we want to know when people started a prescription, we can't use the `drug_era` table anymore, since that combines multiple prescriptions into single eras.
-
-```{r}
-sql <- "
-SELECT MIN(drug_exposure_start_date) AS min_date,
-  MAX(drug_exposure_start_date) AS max_date
-FROM @cdm.drug_exposure
-INNER JOIN @cdm.concept_ancestor
-  ON drug_concept_id = descendant_concept_id
-WHERE ancestor_concept_id = 1118084;
 "
 
 renderTranslateQuerySql(
@@ -219,6 +195,29 @@ renderTranslateQuerySql(
   cdm = cdmDatabaseSchema
 )
 ```
+
+### 3. During which calendar dates did people start a celecoxib prescription?
+
+Because we want to know when people started a prescription, we can't use the `drug_era` table anymore, since that combines multiple prescriptions into single eras.
+
+```{r}
+sql <- "
+SELECT MIN(drug_exposure_start_date) AS min_date,
+  MAX(drug_exposure_start_date) AS max_date
+FROM @cdm.drug_exposure
+INNER JOIN @cdm.concept_ancestor
+  ON drug_concept_id = descendant_concept_id
+WHERE ancestor_concept_id = 1118084;
+"
+
+renderTranslateQuerySql(
+  connection = connection,
+  sql = sql,
+  cdm = cdmDatabaseSchema
+)
+```
+
+
 
 ## Disconnecting
 

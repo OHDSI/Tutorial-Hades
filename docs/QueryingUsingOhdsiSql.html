@@ -96,8 +96,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#answers" id="toc-answers" class="nav-link" data-scroll-target="#answers">Answers</a>
   <ul class="collapse">
   <li><a href="#what-is-the-minimum-maximum-and-mean-length-of-observation" id="toc-what-is-the-minimum-maximum-and-mean-length-of-observation" class="nav-link" data-scroll-target="#what-is-the-minimum-maximum-and-mean-length-of-observation">1. What is the minimum, maximum, and mean length of observation?</a></li>
-  <li><a href="#during-which-calendar-dates-did-people-start-a-celecoxib-prescription" id="toc-during-which-calendar-dates-did-people-start-a-celecoxib-prescription" class="nav-link" data-scroll-target="#during-which-calendar-dates-did-people-start-a-celecoxib-prescription">3. During which calendar dates did people start a celecoxib prescription?</a></li>
   <li><a href="#how-many-people-have-at-least-one-prescription-of-celecoxib." id="toc-how-many-people-have-at-least-one-prescription-of-celecoxib." class="nav-link" data-scroll-target="#how-many-people-have-at-least-one-prescription-of-celecoxib.">2. How many people have at least one prescription of celecoxib.</a></li>
+  <li><a href="#during-which-calendar-dates-did-people-start-a-celecoxib-prescription" id="toc-during-which-calendar-dates-did-people-start-a-celecoxib-prescription" class="nav-link" data-scroll-target="#during-which-calendar-dates-did-people-start-a-celecoxib-prescription">3. During which calendar dates did people start a celecoxib prescription?</a></li>
   </ul></li>
   <li><a href="#disconnecting" id="toc-disconnecting" class="nav-link" data-scroll-target="#disconnecting">Disconnecting</a></li>
   </ul>
@@ -250,9 +250,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
 <p>Now use what you’ve learned so far to answer the following questions:</p>
 <ol type="1">
-<li><p>What is the minimum, maximum, and mean length (in days) of observation? (Hint: you can use the <a href="https://learn.microsoft.com/en-us/sql/t-sql/functions/datediff-transact-sql?view=sql-server-ver16"><code>DATEDIFF</code></a> function to compute the time between two dates.)</p></li>
-<li><p>During which period in time (calender start and end date) did people start a celecoxib prescription?</p></li>
-<li><p>How many people have at least one prescription of celecoxib. (Note: there’s an easy way to do this, using <code>drug_era</code>, and a harder way using <code>drug_exposure</code> and <code>concept_ancestor</code>. Can you do both?</p></li>
+<li>What is the minimum, maximum, and mean length (in days) of observation? (Hint: you can use the <a href="https://learn.microsoft.com/en-us/sql/t-sql/functions/datediff-transact-sql?view=sql-server-ver16"><code>DATEDIFF</code></a> function to compute the time between two dates.)</li>
+<li>How many people have at least one prescription of celecoxib. (Note: there’s an easy way to do this, using <code>drug_era</code>, and a harder way using <code>drug_exposure</code> and <code>concept_ancestor</code>. Can you do both?)</li>
+<li>During which period in time (calender start and end date) did people start a celecoxib prescription?</li>
 </ol>
 </section>
 <section id="answers" class="level2">
@@ -286,45 +286,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="during-which-calendar-dates-did-people-start-a-celecoxib-prescription" class="level3">
-<h3 class="anchored" data-anchor-id="during-which-calendar-dates-did-people-start-a-celecoxib-prescription">3. During which calendar dates did people start a celecoxib prescription?</h3>
-<p>Because we want to know when people started a prescription, we can’t use the <code>drug_era</code> table anymore, since that combines multiple prescriptions into single eras.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">"</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT MIN(drug_exposure_start_date) AS min_date,</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="st">  MAX(drug_exposure_start_date) AS max_date</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="st">FROM @cdm.drug_exposure</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="st">INNER JOIN @cdm.concept_ancestor</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="st">  ON drug_concept_id = descendant_concept_id</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE ancestor_concept_id = 1118084;</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">renderTranslateQuerySql</span>(</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">connection =</span> connection,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdm =</span> cdmDatabaseSchema</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    MIN_DATE   MAX_DATE
-1 1941-12-05 2019-06-21</code></pre>
-</div>
-</div>
-</section>
 <section id="how-many-people-have-at-least-one-prescription-of-celecoxib." class="level3">
 <h3 class="anchored" data-anchor-id="how-many-people-have-at-least-one-prescription-of-celecoxib.">2. How many people have at least one prescription of celecoxib.</h3>
 <p>You can use the <code>drug_era</code> table, which already has all drugs rolled up to the ingredient level:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">"</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT COUNT(DISTINCT person_id)</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">FROM @cdm.drug_era</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE drug_concept_id = 1118084;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">renderTranslateQuerySql</span>(</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">connection =</span> connection,</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdm =</span> cdmDatabaseSchema</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT COUNT(DISTINCT person_id)</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="st">FROM @cdm.drug_era</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE drug_concept_id = 1118084;</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">renderTranslateQuerySql</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">connection =</span> connection,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdm =</span> cdmDatabaseSchema</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  COUNT(DISTINCT PERSON_ID)
 1                      1844</code></pre>
@@ -332,22 +308,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>If you use the <code>drug_exposure</code>, you will need to use the <code>concept_ancestor</code> table to map drugs to ingredients yourself:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">"</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT COUNT(DISTINCT person_id)</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="st">FROM @cdm.drug_exposure</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="st">INNER JOIN @cdm.concept_ancestor</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="st">  ON drug_concept_id = descendant_concept_id</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE ancestor_concept_id = 1118084;</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">renderTranslateQuerySql</span>(</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">connection =</span> connection,</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdm =</span> cdmDatabaseSchema</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT COUNT(DISTINCT person_id)</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="st">FROM @cdm.drug_exposure</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">INNER JOIN @cdm.concept_ancestor</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="st">  ON drug_concept_id = descendant_concept_id</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE ancestor_concept_id = 1118084;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">renderTranslateQuerySql</span>(</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">connection =</span> connection,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdm =</span> cdmDatabaseSchema</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  COUNT(DISTINCT PERSON_ID)
 1                      1844</code></pre>
+</div>
+</div>
+</section>
+<section id="during-which-calendar-dates-did-people-start-a-celecoxib-prescription" class="level3">
+<h3 class="anchored" data-anchor-id="during-which-calendar-dates-did-people-start-a-celecoxib-prescription">3. During which calendar dates did people start a celecoxib prescription?</h3>
+<p>Because we want to know when people started a prescription, we can’t use the <code>drug_era</code> table anymore, since that combines multiple prescriptions into single eras.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT MIN(drug_exposure_start_date) AS min_date,</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="st">  MAX(drug_exposure_start_date) AS max_date</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="st">FROM @cdm.drug_exposure</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="st">INNER JOIN @cdm.concept_ancestor</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="st">  ON drug_concept_id = descendant_concept_id</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE ancestor_concept_id = 1118084;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">renderTranslateQuerySql</span>(</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">connection =</span> connection,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdm =</span> cdmDatabaseSchema</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    MIN_DATE   MAX_DATE
+1 1941-12-05 2019-06-21</code></pre>
 </div>
 </div>
 </section>
