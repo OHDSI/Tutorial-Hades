@@ -1,0 +1,325 @@
+---
+title: "Capr"
+subtitle: "Create OHDSI cohorts with R"
+format:
+  revealjs: 
+    theme: simple
+    incremental: true   
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    margin: 0.07
+    code-link: true
+    code-line-numbers: false
+    height: 900
+    width: 1600
+execute:
+  echo: true
+  eval: true
+editor: visual
+---
+
+## Interacting with an OMOP common data model from R
+
+<br>
+
+::: columns
+::: {.column width="40%"}
+[![](images/capr_logo.png){fig-align="center"}](https://ohdsi.github.io/Capr/)
+:::
+
+::: {.column width="60%"}
+Capr provides a language for expressing standard OHDSI Cohort definitions in R code.
+
+<br>
+
+Capr is particularly helpful when creating a large number of similar cohorts.
+:::
+:::
+
+. . .
+
+OHDSI defines a cohort as "a set of persons who satisfy one or more inclusion criteria for a duration of time".
+
+<br>
+
+. . .
+
+Learn more about the OHDSI approach to cohort building in the cohorts chapter of the [Book of OHDSI.](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html)
+
+## OHDSI Cohort Definitions
+
+![](images/cohort1.png){fig-align="center"}
+
+. . .
+
+Note that the negation of an "exclusion criteria" is an "inclusion criteria".
+
+## OHDSI Cohort Definitions
+
+For example: How would we restate these "exclusion criteria" as "inclusion criteria"?
+
+![<https://clinicaltrials.gov/ct2/show/NCT01492868>](inclusion_criteria.png){fig-align="center" width="983"}
+
+## OHDSI Cohort Definitions
+
+<br>
+
+Exclude if there are \> 0 occurrences of Cystic Fibrosis prior to index
+
+. . .
+
+<br>
+
+Include if there are exactly 0 occurrences of Cystic Fibrosis prior to index
+
+. . .
+
+<br>
+
+We'll write all our exclusion criteria as inclusion criteria to keep from getting confused.
+
+## Installation
+
+Install `Capr` from Github and CDMConnector from CRAN
+
+```{r setup, eval=FALSE}
+# install.packages("remotes")
+remotes::install_github("OHDSI/Capr")
+install.packages("CDMConnector")
+```
+
+<br/>
+
+## Concept Sets
+
+A fundamental building block to cohorts are concept sets.
+
+. . .
+
+These are like code sets but fancier.
+
+![](images/concept_set_meme.png){fig-align="center"}
+
+## Concepts vs Codes
+
+![](images/vocab-table.png)
+
+## Concept Sets
+
+Concept sets use OHDSI standard concept IDs (integers) instead of character strings.
+
+```{r, message=FALSE}
+library(DatabaseConnector)
+library(Capr)
+
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+connection <- connect(connectionDetails)
+
+querySql(connection, "select * from concept limit 6")
+```
+
+## Create the Capr concept sets
+
+Gastrointestinal bleeding concept is 192671
+
+```{r}
+gibleed <- cs(descendants(192671))
+gibleed <- getConceptSetDetails(gibleed, connection, "main")
+gibleed
+as.json(gibleed)
+```
+
+## Create the Capr concept sets
+
+Let's create four cohorts. Three drug cohorts and one condition cohort.
+
+```{r}
+gibleed <- cs(descendants(192671))
+celecoxib <- cs(descendants(1118084))
+diclofenac <- cs(descendants(1124300))
+nsaids <- cs(descendants(c(1118084, 1124300)))
+```
+
+## Cohort Entry Events
+
+```{r}
+# create concept set
+gibleed <- cs(descendants(192671))
+celecoxib <- cs(descendants(1118084))
+diclofenac <- cs(descendants(1124300))
+nsaids <- cs(descendants(c(1118084, 1124300)))
+
+gibleedCohort <- cohort(entry = entry(condition(gibleed)))
+celecoxibCohort <- cohort(entry = entry(drug(celecoxib)))
+diclofenacCohort <- cohort(entry = entry(drug(diclofenac)))
+nsaidsCohort <- cohort(entry = entry(drug(nsaids)))
+```
+
+## Generate a few simple cohorts
+
+First we need to create a "Cohort Set" object
+
+```{r}
+
+library(dplyr, warn.conflicts = FALSE)
+
+cohortsToCreate <- tibble(
+  cohortId = 1L:4L,
+  cohortName = c("gibleed", "celecoxib", "diclofenac", "nsaids"),
+  caprCohort = list(gibleedCohort, celecoxibCohort, diclofenacCohort, nsaidsCohort)) %>% 
+  mutate(json = purrr::map_chr(caprCohort, as.json)) %>% 
+  mutate(expression = purrr::map(json, CirceR::cohortExpressionFromJson)) %>% 
+  mutate(sql  = purrr::map_chr(expression, 
+                               CirceR::buildCohortQuery, 
+                               options = CirceR::createGenerateOptions(generateStats = FALSE))) %>% 
+  select("cohortId", "cohortName", "sql", "json") %>% 
+  mutate(cohortId = bit64::as.integer64(cohortId))
+  
+CohortGenerator::isCohortDefinitionSet(cohortsToCreate)
+
+cohortsToCreate
+
+```
+
+## Generate a few simple cohorts
+
+```{r, error=TRUE}
+# Create the cohort tables to hold the cohort generation results
+cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = "my_cohort_table")
+
+CohortGenerator::createCohortTables(connectionDetails = connectionDetails,
+                                                        cohortDatabaseSchema = "main",
+                                                        cohortTableNames = cohortTableNames)
+# Generate the cohorts
+cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = connectionDetails,
+                                                       cdmDatabaseSchema = "main",
+                                                       cohortDatabaseSchema = "main",
+                                                       cohortTableNames = cohortTableNames,
+                                                       cohortDefinitionSet = cohortsToCreate)
+
+
+```
+
+## Generate a few simple cohorts
+
+```{r}
+# find parameters in ohdsi-sql
+unique(stringr::str_extract_all(cohortsToCreate$sql[1], "@\\w+")[[1]])
+
+for (i in seq_len(nrow(cohortsToCreate))) {
+  sql <- cohortsToCreate$sql[i]
+  id <- cohortsToCreate$cohortId[i]
+
+  sql <- SqlRender::render(sql,
+                           vocabulary_database_schema = "main",
+                           cdm_database_schema = "main",
+                           target_database_schema = "main",
+                           target_cohort_table = cohortTableNames$cohortTable,
+                           target_cohort_id = id,
+                           results_database_schema = "main") %>% 
+    SqlRender::translate("sqlite") 
+
+  executeSql(connection, sql)
+}
+
+# Get the cohort counts
+cohortCounts <- CohortGenerator::getCohortCounts(connectionDetails = connectionDetails,
+                                                 cohortDatabaseSchema = "main",
+                                                 cohortTable = cohortTableNames$cohortTable)
+print(cohortCounts)
+
+
+```
+
+## Cohort Exit
+
+The default exit is "end of observation period".
+
+Let's define the cohort exit as one day the cohort entry and capture all events including the first one.
+
+```{r}
+nsaidsCohort <- cohort(entry = entry(drug(nsaids), primaryCriteriaLimit = "All"),
+                       exit = exit(fixedExit("startDate", 1L)))
+
+nsaidsCohort
+```
+
+## Require prior or post index observation time
+
+```{r}
+nsaidsCohort <- cohort(entry = entry(drug(nsaids), 
+                                     observationWindow = continuousObservation(-365L, 0L),
+                                     primaryCriteriaLimit = "All"),
+                       exit = exit(fixedExit("startDate", 1L)))
+
+```
+
+## Attrition
+
+Now we will add two inclusion criteria
+
+```{r}
+
+diclofenac <- cs(descendants(1124300), name = "diclofenac")
+nsaid <- cs(descendants(21603933), name = "nsaid")
+cancer <- cs(descendants(443392), name = "cancer")
+
+ch <- cohort(
+  entry = entry(drugEra(diclofenac, age(gte(16))),
+                observationWindow = continuousObservation(-365L, 0L)),
+  attrition = attrition(
+    "no prior nsaid or cancer" = withAll(
+      exactly(0, drug(nsaid), eventStarts(-Inf, 0, index = "startDate")),
+      exactly(0, condition(cancer), eventStarts(-Inf, 0, index = "startDate"))
+    )
+  )
+)
+
+cohortSet <- list("diclofenac_without_prior_nsaid_or_cancer" = ch)
+```
+
+## Writing many cohorts
+
+Capr really shines when you need to create a large number of cohorts programatically
+
+Create one cohort for every ATC drug class
+
+```{r eval = F}
+cohortList <- list()
+for (i in seq_along(condition_concepts)) {
+  cohortList[[i]] <- cohort(entry = condition(cs(condition_concepts[i])))
+  
+  # to save the json files
+  # Capr::writeCohort(cohortList[[i]], paste0("cohort", i, ".json")) 
+  
+  # to load into Atlas 
+  # ROhdsiWebApi::postCohortDefinition()
+}
+
+```
+
+## Conclusion
+
+Capr has lots of options that exactly match the options provided by the Atlas web application. Atlas is a great tool for creating a few cohorts in a graphical user interface. Capr complements Atlas providing tools to create a large number of cohorts easily in R.
+
+## Your turn
+
+Create your own cohort with Capr and generate it on an example CDM. The example Eunomia dataset does not have very much data in it so you can try one of the CDM datasets available [here](https://drive.google.com/drive/folders/1SROTshSBoTYq7MsRtZjYhYwQhmiOHPy5?usp=sharing).
+
+Download one of the duckdb files and connect to it like so. Note you will need the latest version of duckdb (0.8)
+
+```{r, eval=FALSE}
+connectionDetails <- createConnectionDetails("duckdb", 
+                       server = "~/Desktop/synthea_cdms/allergies_cdm.duckdb")
+
+connection <- connect(connectionDetails)
+
+getTableNames(connection)
+
+disconnect(connection)
+```
+
+```{r, include=FALSE, echo=FALSE}
+disconnect(connection)
+```
