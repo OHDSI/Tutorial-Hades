@@ -4,14 +4,16 @@ This repository contains materials for tutorials on the [Health Analytics Data-t
 
 # Agenda
 
-| Start    | Topic                                                                        | Duration (minutes) |
-|----------|------------------------------------------------------------------------------|--------------------|
-| 10:00 AM | General overview of HADES                                                    | 30                 |
-| 10:30 AM | [How to contribute](https://ohdsi.github.io/Hades/contribute.html)           | 15                 |
-| 10:45 AM | Coffee break                                                                 | 15                 |
-| 11:00 AM | Practical 1: Installing Hades                                                | 30                 |
-| 11:30 AM | Practical 2: Querying the OMOP CDM with OHDSI-SQL                            | 30                 |
-| 12:00 PM | [Practical 3: Create Cohorts using Capr](https://adamblack3.quarto.pub/capr) | 30                 |
+| Start | Topic                                                                        | Duration (minutes) |
+|-------|------------------------------------------------------------------------------|--------------------|
+| 13:30 | General overview of HADES                                                    | 30                 |
+| 14:00 | Practical 1: Installing Hades                                                | 30                 |
+| 14:30 | Practical 2: Querying the OMOP CDM with OHDSI-SQL                            | 30                 |
+| 15:00 | Break.                                                                       | 15                 |
+| 15:30 | Creating cohorts with Capr                                                   | 10                 |
+| 15:10 | Practical 3: Create Cohorts using Capr                                       | 20                 |
+| 16:00 | Strategus overview                                                           | 15                 |
+| 16:15 | Practical 4: Design and run a Stratgus study.                                | 45                 |
 
 # Practicals
 
@@ -21,10 +23,10 @@ You can do the practicals on your own laptop, or else you can create a free acco
 
 Follow these instructions on the HADES website:
 
-1.  [how to set up R](https://ohdsi.github.io/Hades/rSetup.html) (Note: if you're using the Posit Cloud you can skip most of this, but you'll still need to configure your GitHub Personal Access Token).
-2.  [how to install HADES](https://ohdsi.github.io/Hades/installingHades.html).
+1.  [How to set up R](https://ohdsi.github.io/Hades/rSetup.html) (Note: if you're using the Posit Cloud you can skip most of this, but you'll still need to configure your GitHub Personal Access Token).
+2.  [How to install HADES](https://ohdsi.github.io/Hades/installingHades.html).
 
-## Practical 2: Query the CDM using OhdsiSql
+## Practical 2: Query the CDM using OHDSI-SQL  
 
 Complete the exercises here:
 
@@ -32,4 +34,4 @@ Complete the exercises here:
 
 ## Practical 3: Create cohort definitions using Capr
 
-1.  [Building Cohorts with Capr](https://adamblack3.quarto.pub/capr/#/title-slide)
+1.  [Building Cohorts with Capr](https://ohdsi.github.io/Tutorial-Hades/CreateCohortsUsingCapr.html)
