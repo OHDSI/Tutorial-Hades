@@ -5,7 +5,7 @@ editor: source
 toc: true
 ---
 
-These excercises will walk through the steps of defining and generating cohorts using the `Capr` and `CohortGenerator` packages. For more information, go to the package website:
+These exercises will walk through the steps of defining and generating cohorts using the `Capr` and `CohortGenerator` packages. For more information, go to the package website:
 
 - [Capr](https://ohdsi.github.io/Capr/index.html)
 - [CohortGenerator](https://github.com/OHDSI/CohortGenerator)
