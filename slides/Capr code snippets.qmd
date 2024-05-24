@@ -1,0 +1,39 @@
+---
+title: "Capr code snippets"
+format: html
+editor: source
+toc: true
+---
+
+```{r}
+library(Capr)
+lisinopril <- cs(descendants(1308216), name = "lisinopril")
+```
+
+
+```{r}
+lisinopril <- cs(descendants(1308216), name = "lisinopril")
+hypertension <- cs(descendants(320128), name = "hypertension")
+
+lisinoprilCohort <- cohort(
+  entry = entry(
+    drugExposure(lisinopril),
+    firstOccurrence()
+  ),
+  attrition = attrition(
+    "365 days of prior observation" = withAll(
+      continuousObservation(prior = 365)
+    ),
+    "Prior hypertension" = withAll(
+      atLeast(1, conditionOccurrence(hypertension),
+              duringInterval(eventStarts(-365, 0))
+      )
+    )
+  ),
+  exit = exit(
+    endStrategy = drugExit(lisinopril,
+                           persistenceWindow = 30,
+                           surveillanceWindow = 0)
+  )
+)
+```

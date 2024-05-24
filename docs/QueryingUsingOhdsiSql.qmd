@@ -22,8 +22,7 @@ At the very minimum we'd need the [DatabaseConnector](http://ohdsi.github.io/Dat
 We will assume these packages have already been installed as part of the full HADES installation. If not you can install them using:
 
 ```{r eval=FALSE}
-install.packages(c("DatabaseConnector", "SqlRender", "remotes"))
-remotes::install_github("ohdsi/Eunomia")
+install.packages(c("DatabaseConnector", "SqlRender", "Eunomia"))
 ```
 
 ### Connecting to the Eunomia database
@@ -35,6 +34,8 @@ library(Eunomia)
 connectionDetails <- getEunomiaConnectionDetails()
 cdmDatabaseSchema <- "main"
 ```
+
+The `getEunomiaConnectionDetails()` will download the database file from the internet, unzip it to a temp folder, and provide the connection details to the SQLite database.
 
 We also specify that the CDM database schema is 'main'. (Different platforms have different interpretations of the words 'database' and 'schema', so we tend to use the neutral 'database schema').
 

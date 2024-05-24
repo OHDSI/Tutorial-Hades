@@ -9,11 +9,11 @@ This repository contains materials for tutorials on the [Health Analytics Data-t
 | 13:30 | General overview of HADES                                                    | 30                 |
 | 14:00 | Practical 1: Installing Hades                                                | 30                 |
 | 14:30 | Practical 2: Querying the OMOP CDM with OHDSI-SQL                            | 30                 |
-| 15:00 | Break.                                                                       | 15                 |
+| 15:00 | Break                                                                        | 30                 |
 | 15:30 | Creating cohorts with Capr                                                   | 10                 |
-| 15:10 | Practical 3: Create Cohorts using Capr                                       | 20                 |
-| 16:00 | Strategus overview                                                           | 15                 |
-| 16:15 | Practical 4: Design and run a Stratgus study.                                | 45                 |
+| 15:40 | Practical 3: Create Cohorts using Capr                                       | 30                 |
+| 16:10 | Strategus overview                                                           | 10                 |
+| 16:20 | Practical 4: Design and run a Stratgus study.                                | 40                 |
 
 # Practicals
 
@@ -34,4 +34,6 @@ Complete the exercises here:
 
 ## Practical 3: Create cohort definitions using Capr
 
-1.  [Building Cohorts with Capr](https://ohdsi.github.io/Tutorial-Hades/CreateCohortsUsingCapr.html)
+1.  [Building Cohorts with Capr](https://ohdsi.github.io/Tutorial-Hades/CaprExercises.html)
+
+
