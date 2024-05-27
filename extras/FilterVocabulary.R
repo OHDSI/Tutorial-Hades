@@ -9,18 +9,18 @@ targetDatabaseFile <- "~/Downloads/database-1M_filtered.duckdb"
 # Select concepts used in the CDM ------------------------------------------------------------------
 connection <- connect(dbms = "duckdb", server = sourceDatabaseFile)
 tables <- getTableNames(connection, "main")
+# Note: Excluding concept_class, domain and vocabulary from vocab tables. We want to keep their
+# concept IDs:
 vocabTables <- c("concept", 
                  "concept_ancestor", 
-                 "concept_class", 
                  "concept_relationship", 
                  "concept_synonym", 
-                 "domain",
                  "drug_strength", 
                  "source_to_source_vocab_map",
-                 "source_to_standard_vocab_map",
-                 "vocabulary")
+                 "source_to_standard_vocab_map")
 nonVocabTables <- tables[!tables %in% vocabTables]
 conceptIds <- c()
+# Todo: add unit concepts found in drug_strength table
 for (table in nonVocabTables) {
   message(sprintf("Searching table %s", table))
   fields <- DatabaseConnector::dbListFields(connection, paste("main", table, sep = "."))
@@ -77,8 +77,8 @@ for (table in vocabTables) {
   fields <- DatabaseConnector::dbListFields(connection, paste("main", table, sep = "."))
   fields <- fields[grepl("concept_id", fields)]
   sql <- paste0("SELECT * FROM main.@table WHERE ",
-               paste(paste(fields, "IN (SELECT concept_id FROM #cids)"), collapse = " AND "),
-               ";")
+                paste(paste(fields, "IN (SELECT concept_id FROM #cids)"), collapse = " AND "),
+                ";")
   data <- renderTranslateQuerySql(connection, sql, table = table)
   colnames(data) <- tolower(colnames(data))
   data <- fixDates(data)
