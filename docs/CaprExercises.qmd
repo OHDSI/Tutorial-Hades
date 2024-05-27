@@ -149,7 +149,7 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = conne
 cohortsGenerated
 ```
 
-# Exercices
+# Exercises
 
 Now try it yourself. Create a cohort definition for hypertension. For this exercise, we define hypertension as an occurrence of *Essential Hypertension* (concept ID 320128) and any of its descendants, a *systolic blood pressure* (concept ID 3004249) greater than or equal to 130 *mmHg* (concept ID 8876), or a *diastolic blood pressure* (concept ID 3012888) greater than or equal to 80. People must enter the cohort at the first of any of these events, and remain in the cohort until end of observation.
 

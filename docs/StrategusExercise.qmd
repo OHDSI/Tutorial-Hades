@@ -1,0 +1,225 @@
+---
+title: "Designing and running a Strategus study"
+format: html
+editor: source
+toc: true
+---
+
+In this example, we'll execute an incidence rate study using the Strategus package.
+
+# Download example database
+
+For this exercise we'll use a larger simulated database. Please download the data from [here](https://drive.google.com/file/d/1hH9k0Lf3B8iutQT7U-A5Ii7g9proNWZW/view?usp=sharing). The file is approximately 3.5GB.
+
+# Installation
+
+Install all the required packages:
+
+```{r setup, eval=FALSE}
+install.packages("remotes")
+remotes::install_github("OHDSI/Strategus")
+remotes::install_github("OHDSI/Capr")
+remotes::install_github("OHDSI/CohortGenerator")
+remotes::install_github("OHDSI/CohortIncidence")
+```
+
+# Create study specifications
+
+In the future we plan to have a nice web interface for designing Strategus studies. For now, you will need to use the Strategus R package as well as the Strategus modules you wish to use to generate the specifications.
+
+## Cohort specifications
+
+We will use the Capr package to create the cohort definitions:
+
+```{r}
+library(Capr)
+
+# Hypertension
+essentialHypertension <- cs(
+  descendants(320128),
+  name = "Essential hypertension"
+)
+
+sbp <- cs(3004249, name = "SBP")
+dbp <- cs(3012888, name = "DBP")
+
+hypertensionCohort <- cohort(
+  entry = entry(
+    conditionOccurrence(essentialHypertension),
+    measurement(sbp, valueAsNumber(gte(130)), unit(8876)),
+    measurement(dbp, valueAsNumber(gte(80)), unit(8876))
+  ),
+  exit = exit(
+    endStrategy = observationExit()
+  )
+)
+
+# Acute myocardial infarction
+myocardialInfarction <- cs(
+  descendants(4329847),
+  exclude(descendants(314666)),
+  name = "Myocardial infarction"
+)
+inpatientOrEr <- cs(
+  descendants(9201),
+  descendants(262),
+  name = "Inpatient or ER"
+)
+amiCohort <- cohort(
+  entry = entry(
+    conditionOccurrence(myocardialInfarction),
+    additionalCriteria = withAll(
+      atLeast(1,
+              visit(inpatientOrEr),
+              aperture = duringInterval(eventStarts(-Inf, 0), eventEnds(0, Inf)))
+    ),
+    primaryCriteriaLimit = "All",
+    qualifiedLimit = "All"
+  ),
+  attrition = attrition(
+    "No prior AMI" = withAll(
+      exactly(0,
+              conditionOccurrence(myocardialInfarction),
+              duringInterval(eventStarts(-365, -1)))
+    )
+  ),
+  exit = exit(
+    endStrategy = fixedExit(index = "startDate", offsetDays = 1)
+  )
+)
+cohortDefinitionSet <- makeCohortSet(hypertensionCohort, amiCohort)
+```
+
+By default, the first cohort will get cohort ID 1, the second ID 2, etc.
+
+Next, we use the cohort definitions to create the specifications for the `CohortGeneratorModule`:
+
+```{r}
+source("https://raw.githubusercontent.com/OHDSI/CohortGeneratorModule/v0.3.0/SettingsFunctions.R")
+# Currently there's a mismatch in types. See https://github.com/OHDSI/CohortGenerator/issues/146
+cohortDefinitionSet$cohortId <- as.numeric(cohortDefinitionSet$cohortId)
+
+cohortDefinitionShared <- createCohortSharedResourceSpecifications(cohortDefinitionSet)
+
+cohortGeneratorModuleSpecifications <- createCohortGeneratorModuleSpecifications()
+```
+
+Note that the cohort specifications aren't part of the CohortGeneratorModule specification. Cohort definitions are considered to be a shared resource, often used by multiple modules. 
+
+## Cohort incidence specifications
+
+Next, we must specify how the incidence rates are computed, and for which cohorts:
+
+```{r}
+source("https://raw.githubusercontent.com/OHDSI/CohortIncidenceModule/v0.4.0/SettingsFunctions.R")
+
+# Target cohort is hypertension:
+targetList <- list(CohortIncidence::createCohortRef(
+  id = cohortDefinitionSet$cohortId[1],
+  name = cohortDefinitionSet$cohortName[1]))
+
+# Outcome cohort is AMI:
+outcomeList <- list(CohortIncidence::createOutcomeDef(
+  id = 1,
+  name = cohortDefinitionSet$cohortName[2], 
+  cohortId = cohortDefinitionSet$cohortId[2], 
+  cleanWindow = 365))
+
+# Specify the time-at-risk to coincide with the cohort start and end:
+tars <- list(CohortIncidence::createTimeAtRiskDef(
+  id = 1, 
+  startWith = "start", 
+  endWith = "end", 
+  startOffset = 0,
+  endOffset = 0))
+
+# All together:
+analysisList <- list(CohortIncidence::createIncidenceAnalysis(
+  targets = cohortDefinitionSet$cohortId[1],
+  outcomes = 1,
+  tars = 1))
+irDesign <- CohortIncidence::createIncidenceDesign(
+  targetDefs = targetList,
+  outcomeDefs = outcomeList,
+  tars = tars,
+  analysisList = analysisList,
+  strataSettings = CohortIncidence::createStrataSettings(
+    byYear = TRUE,
+    byGender = TRUE,
+    byAge = TRUE,
+    ageBreaks = seq(0, 110, by = 10)
+  )
+)
+cohortIncidenceModuleSpecifications <- createCohortIncidenceModuleSpecifications(
+  irDesign = irDesign$toList()
+)
+```
+
+## Combine specifications
+
+Now we can combine the specifications for the various modules:
+
+```{r}
+analysisSpecifications <- Strategus::createEmptyAnalysisSpecificiations() %>%
+  Strategus::addSharedResources(cohortDefinitionShared) %>%
+  Strategus::addModuleSpecifications(cohortGeneratorModuleSpecifications) %>%
+  Strategus::addModuleSpecifications(cohortIncidenceModuleSpecifications) 
+
+ParallelLogger::saveSettingsToJson(analysisSpecifications, "studySpecifications.json")
+```
+
+# Run Strategus
+
+Now that we have defined our study, we can share the specifications with others. Here, we just load the JSON file we generated previously, defining the analyses to be performed:
+
+```{r eval=FALSE}
+analysisSpecifications <- ParallelLogger::loadSettingsFromJson("studySpecifications.json")
+```
+
+## Create execution settings
+
+We also need to create execution settings. These tell Strategus how to connect to the database, and where to write the results.
+
+Strategus currently uses `keyring` to share the database credentials between modules. This will likely be removed in the future, but for now, this means we must first store the credentials in keyring using the `storeConnectionDetails()` function:
+
+```{r}
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "duckdb", server = "~/Downloads/database-1M_filtered.duckdb")
+
+Strategus::storeConnectionDetails(
+  connectionDetails = connectionDetails,
+  connectionDetailsReference = "1M filtered Synthea",
+  keyringName = NULL
+)
+```
+
+Here we provided a reference string that can later be used to retrieve the credentials from the keyring. We likely only need to this once, and can re-use these credentials across multiple studies.
+
+We use the reference string as input for the execution settings for our example study:
+
+```{r}
+executionSettings <- Strategus::createCdmExecutionSettings(
+  connectionDetailsReference = "1M filtered Synthea",
+  workDatabaseSchema = "main",
+  cdmDatabaseSchema = "main:",
+  cohortTableNames = CohortGenerator::getCohortTableNames("example_cohort"),
+  workFolder = "strategusWorkFolder",
+  resultsFolder = "strategusResultsFolder",
+  minCellCount = 5
+)
+```
+
+We provide several folders on the local file system where Strategus can write. We also need to set an environmental variable where the Strategus modules can be instantiated. This variable likely only needs to be set once. Multiple studies can use the same folder, and if a module was already previously instantiated, it won't need to be instantiated again:
+
+```{r}
+Sys.setenv("INSTANTIATED_MODULES_FOLDER" = "strategusModules")
+```
+
+Finally, we can call `execute()` to execute the study. This will first download and instantiate all specified Strategus modules. After that, the modules are executed, and results will be written as CSV files to the `resultsFolder` we specified earlier: 
+
+```{r eval=FALSE}
+Strategus::execute(
+  analysisSpecifications = analysisSpecifications,
+  executionSettings = executionSettings,
+  keyringName = NULL
+)
+```

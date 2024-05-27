@@ -86,7 +86,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#creating-more-complex-cohorts" id="toc-creating-more-complex-cohorts" class="nav-link" data-scroll-target="#creating-more-complex-cohorts">Creating more complex cohorts</a></li>
   <li><a href="#print-friendly" id="toc-print-friendly" class="nav-link" data-scroll-target="#print-friendly">Print friendly</a></li>
   <li><a href="#generate-the-cohorts" id="toc-generate-the-cohorts" class="nav-link" data-scroll-target="#generate-the-cohorts">Generate the cohorts</a></li>
-  <li><a href="#exercices" id="toc-exercices" class="nav-link" data-scroll-target="#exercices">Exercices</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#answers" id="toc-answers" class="nav-link" data-scroll-target="#answers">Answers</a></li>
   </ul>
 </nav>
@@ -305,7 +305,7 @@ Remaining events will be combined into cohort eras if they are within 0 days of 
 - Created table main.my_cohort_table_inclusion_stats
 - Created table main.my_cohort_table_summary_stats
 - Created table main.my_cohort_table_censor_stats
-Creating cohort tables took 0.02secs</code></pre>
+Creating cohort tables took 0.03secs</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the cohorts</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>cohortsGenerated <span class="ot">&lt;-</span> CohortGenerator<span class="sc">::</span><span class="fu">generateCohortSet</span>(<span class="at">connectionDetails =</span> connectionDetails,</span>
@@ -378,7 +378,7 @@ Creating cohort tables took 0.02secs</code></pre>
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Executing SQL took 0.0134 secs</code></pre>
+<pre><code>Executing SQL took 0.014 secs</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>2/3- Generating cohort: celecoxibCohort
@@ -507,7 +507,7 @@ Creating cohort tables took 0.02secs</code></pre>
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Executing SQL took 0.0404 secs</code></pre>
+<pre><code>Executing SQL took 0.043 secs</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>3/3- Generating cohort: diclofenacCohort
@@ -636,26 +636,26 @@ Creating cohort tables took 0.02secs</code></pre>
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Executing SQL took 0.0324 secs</code></pre>
+<pre><code>Executing SQL took 0.0335 secs</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Generating cohort set took 0.2 secs</code></pre>
+<pre><code>Generating cohort set took 0.21 secs</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cohortsGenerated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  cohortId       cohortName generationStatus           startTime
-1        1    gibleedCohort         COMPLETE 2024-05-24 11:42:28
-2        2  celecoxibCohort         COMPLETE 2024-05-24 11:42:28
-3        3 diclofenacCohort         COMPLETE 2024-05-24 11:42:28
+1        1    gibleedCohort         COMPLETE 2024-05-27 11:33:12
+2        2  celecoxibCohort         COMPLETE 2024-05-27 11:33:12
+3        3 diclofenacCohort         COMPLETE 2024-05-27 11:33:12
               endTime
-1 2024-05-24 11:42:28
-2 2024-05-24 11:42:28
-3 2024-05-24 11:42:28</code></pre>
+1 2024-05-27 11:33:12
+2 2024-05-27 11:33:12
+3 2024-05-27 11:33:12</code></pre>
 </div>
 </div>
 </section>
-<section id="exercices" class="level1">
-<h1>Exercices</h1>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
 <p>Now try it yourself. Create a cohort definition for hypertension. For this exercise, we define hypertension as an occurrence of <em>Essential Hypertension</em> (concept ID 320128) and any of its descendants, a <em>systolic blood pressure</em> (concept ID 3004249) greater than or equal to 130 <em>mmHg</em> (concept ID 8876), or a <em>diastolic blood pressure</em> (concept ID 3012888) greater than or equal to 80. People must enter the cohort at the first of any of these events, and remain in the cohort until end of observation.</p>
 <p>Hint: there are <a href="https://ohdsi.github.io/Capr/articles/Examples.html">examples on the Capr website</a> that will help here.</p>
 </section>
