@@ -7,7 +7,7 @@ toc: true
 
 ## OHDSI-SQL
 
-Each database platform speaks its own dialect of SQL. To allow the same code to run across all database platforms supported by OHDSI, we have developed OHDSI-SQL, a SQL dialect that is a proper subset of the SQL Server SQL dialect, but also supports parameterization of the SQL code. The HADES [SqlRender](https://ohdsi.github.io/SqlRender/) package can translate OHDSI-SQL into any of the supported other SQL dialects.
+Each database platform speaks its own dialect of SQL. To allow the same code to run across all database platforms supported by OHDSI, we have developed OHDSI-SQL, a SQL dialect that is a proper subset of the SQL Server SQL dialect, but also supports parameterization of the SQL code. The HADES [SqlRender](https://results.ohdsi.org/app/01_SqlDeveloper) package can translate OHDSI-SQL into any of the supported other SQL dialects.
 
 You can use the online [SqlDeveloper](https://data.ohdsi.org/SqlDeveloper/) app to see how your OHDSI-SQL will be translated in to the various dialects.
 

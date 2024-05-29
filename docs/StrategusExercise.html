@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Building Cohorts with Capr</title>
+<title>Designing and running a Strategus study</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -98,7 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Building Cohorts with Capr</h1>
+<h1 class="title">Designing and running a Strategus study</h1>
 </div>
 
 
@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In this example, we’ll execute an incidence rate study using the Strategus package.</p>
 <section id="download-example-database" class="level1">
 <h1>Download example database</h1>
-<p>For this exercise we’ll use a larger simulated database. Please download the data from <a href="https://drive.google.com/file/d/1hH9k0Lf3B8iutQT7U-A5Ii7g9proNWZW/view?usp=sharing">here</a>. The file is approximately 3.5GB.</p>
+<p>For this exercise we’ll use a larger simulated database. Please download the data from <a href="https://drive.google.com/file/d/1l5wq57fAslnoFR2umFQvVZbDiq5IK0UF/view?usp=sharing">here</a>. The file is approximately 2.3GB. Extract the file after downloading.</p>
 </section>
 <section id="installation" class="level1">
 <h1>Installation</h1>
@@ -198,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>By default, the first cohort will get cohort ID 1, the second ID 2, etc.</p>
 <p>Next, we use the cohort definitions to create the specifications for the <code>CohortGeneratorModule</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"https://raw.githubusercontent.com/OHDSI/CohortGeneratorModule/v0.3.0/SettingsFunctions.R"</span>)</span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"https://raw.githubusercontent.com/OHDSI/CohortGeneratorModule/v0.4.0/SettingsFunctions.R"</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Currently there's a mismatch in types. See https://github.com/OHDSI/CohortGenerator/issues/146</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>cohortDefinitionSet<span class="sc">$</span>cohortId <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(cohortDefinitionSet<span class="sc">$</span>cohortId)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -210,46 +210,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cohort-incidence-specifications" class="level2">
 <h2 class="anchored" data-anchor-id="cohort-incidence-specifications">Cohort incidence specifications</h2>
+<p>Next, we must specify how the incidence rates are computed, and for which cohorts:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"https://raw.githubusercontent.com/OHDSI/CohortIncidenceModule/v0.4.0/SettingsFunctions.R"</span>)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"https://raw.githubusercontent.com/OHDSI/CohortIncidenceModule/v0.4.1/SettingsFunctions.R"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>targetList <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createCohortRef</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> cohortDefinitionSet<span class="sc">$</span>cohortId[<span class="dv">1</span>],</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> cohortDefinitionSet<span class="sc">$</span>cohortName[<span class="dv">1</span>]))</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>outcomeList <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createOutcomeDef</span>(</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> cohortDefinitionSet<span class="sc">$</span>cohortName[<span class="dv">2</span>], </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cohortId =</span> cohortDefinitionSet<span class="sc">$</span>cohortId[<span class="dv">2</span>], </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cleanWindow =</span> <span class="dv">365</span>))</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>tars <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createTimeAtRiskDef</span>(</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span>, </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">startWith =</span> <span class="st">"start"</span>, </span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">endWith =</span> <span class="st">"end"</span>, </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">startOffset =</span> <span class="dv">0</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">endOffset =</span> <span class="dv">0</span>))</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>analysisList <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createIncidenceAnalysis</span>(</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">targets =</span> cohortDefinitionSet<span class="sc">$</span>cohortId[<span class="dv">1</span>],</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">outcomes =</span> <span class="dv">1</span>,</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">tars =</span> <span class="dv">1</span>))</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>irDesign <span class="ot">&lt;-</span> CohortIncidence<span class="sc">::</span><span class="fu">createIncidenceDesign</span>(</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">targetDefs =</span> targetList,</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">outcomeDefs =</span> outcomeList,</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">tars =</span> tars,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysisList =</span> analysisList,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">strataSettings =</span> CohortIncidence<span class="sc">::</span><span class="fu">createStrataSettings</span>(</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">byYear =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">byGender =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">byAge =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">ageBreaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">110</span>, <span class="at">by =</span> <span class="dv">10</span>)</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>cohortIncidenceModuleSpecifications <span class="ot">&lt;-</span> <span class="fu">createCohortIncidenceModuleSpecifications</span>(</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">irDesign =</span> irDesign<span class="sc">$</span><span class="fu">toList</span>()</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Target cohort is hypertension:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>targetList <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createCohortRef</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> cohortDefinitionSet<span class="sc">$</span>cohortId[<span class="dv">1</span>],</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> cohortDefinitionSet<span class="sc">$</span>cohortName[<span class="dv">1</span>]))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Outcome cohort is AMI:</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>outcomeList <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createOutcomeDef</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> cohortDefinitionSet<span class="sc">$</span>cohortName[<span class="dv">2</span>], </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cohortId =</span> cohortDefinitionSet<span class="sc">$</span>cohortId[<span class="dv">2</span>], </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cleanWindow =</span> <span class="dv">365</span>))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify the time-at-risk to coincide with the cohort start and end:</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>tars <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createTimeAtRiskDef</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span>, </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">startWith =</span> <span class="st">"start"</span>, </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">endWith =</span> <span class="st">"end"</span>, </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">startOffset =</span> <span class="dv">0</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">endOffset =</span> <span class="dv">0</span>))</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># All together:</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>analysisList <span class="ot">&lt;-</span> <span class="fu">list</span>(CohortIncidence<span class="sc">::</span><span class="fu">createIncidenceAnalysis</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">targets =</span> cohortDefinitionSet<span class="sc">$</span>cohortId[<span class="dv">1</span>],</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">outcomes =</span> <span class="dv">1</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">tars =</span> <span class="dv">1</span>))</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>irDesign <span class="ot">&lt;-</span> CohortIncidence<span class="sc">::</span><span class="fu">createIncidenceDesign</span>(</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">targetDefs =</span> targetList,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">outcomeDefs =</span> outcomeList,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">tars =</span> tars,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysisList =</span> analysisList,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">strataSettings =</span> CohortIncidence<span class="sc">::</span><span class="fu">createStrataSettings</span>(</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">byYear =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">byGender =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">byAge =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">ageBreaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">110</span>, <span class="at">by =</span> <span class="dv">10</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>cohortIncidenceModuleSpecifications <span class="ot">&lt;-</span> <span class="fu">createCohortIncidenceModuleSpecifications</span>(</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">irDesign =</span> irDesign<span class="sc">$</span><span class="fu">toList</span>()</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="combine-specifications" class="level2">
 <h2 class="anchored" data-anchor-id="combine-specifications">Combine specifications</h2>
+<p>Now we can combine the specifications for the various modules:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>analysisSpecifications <span class="ot">&lt;-</span> Strategus<span class="sc">::</span><span class="fu">createEmptyAnalysisSpecificiations</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  Strategus<span class="sc">::</span><span class="fu">addSharedResources</span>(cohortDefinitionShared) <span class="sc">%&gt;%</span></span>
@@ -262,38 +271,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="run-strategus" class="level1">
 <h1>Run Strategus</h1>
+<p>Now that we have defined our study, we can share the specifications with others. Here, we just load the JSON file we generated previously, defining the analyses to be performed:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analysisSpecifications <span class="ot">&lt;-</span> ParallelLogger<span class="sc">::</span><span class="fu">loadSettingsFromJson</span>(<span class="st">"studySpecifications.json"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="create-execution-settings" class="level2">
 <h2 class="anchored" data-anchor-id="create-execution-settings">Create execution settings</h2>
+<p>We also need to create execution settings. These tell Strategus how to connect to the database, and where to write the results.</p>
+<p>Strategus currently uses <code>keyring</code> to share the database credentials between modules. This will likely be removed in the future, but for now, this means we must first store the credentials in keyring using the <code>storeConnectionDetails()</code> function.</p>
+<p>Make sure to <strong>change the value of <code>server</code> to the location of the file you downloaded</strong>!</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>connectionDetails <span class="ot">&lt;-</span> DatabaseConnector<span class="sc">::</span><span class="fu">createConnectionDetails</span>(<span class="at">dbms =</span> <span class="st">"duckdb"</span>, <span class="at">server =</span> <span class="st">"~/Downloads/database-1M_filtered.duckdb"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>Strategus<span class="sc">::</span><span class="fu">storeConnectionDetails</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">connectionDetails =</span> connectionDetails,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">connectionDetailsReference =</span> <span class="st">"1M filtered Synthea"</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">keyringName =</span> <span class="cn">NULL</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>connectionDetails <span class="ot">&lt;-</span> DatabaseConnector<span class="sc">::</span><span class="fu">createConnectionDetails</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dbms =</span> <span class="st">"duckdb"</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">server =</span> <span class="st">"~/Downloads/database-1M_filtered.duckdb"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>Strategus<span class="sc">::</span><span class="fu">storeConnectionDetails</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">connectionDetails =</span> connectionDetails,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">connectionDetailsReference =</span> <span class="st">"1M filtered Synthea"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">keyringName =</span> <span class="cn">NULL</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Here we provided a reference string that can later be used to retrieve the credentials from the keyring. We likely only need to this once, and can re-use these credentials across multiple studies.</p>
+<p>We use the reference string as input for the execution settings for our example study:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>executionSettings <span class="ot">&lt;-</span> Strategus<span class="sc">::</span><span class="fu">createCdmExecutionSettings</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">connectionDetailsReference =</span> <span class="st">"1M filtered Synthea"</span>,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">workDatabaseSchema =</span> <span class="st">"main"</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdmDatabaseSchema =</span> <span class="st">"main:"</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cohortTableNames =</span> CohortGenerator<span class="sc">::</span><span class="fu">getCohortTableNames</span>(<span class="st">"example_cohort"</span>),</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">workFolder =</span> <span class="st">"strategusWorkFolder"</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">resultsFolder =</span> <span class="st">"strategusResultsFolder"</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">minCellCount =</span> <span class="dv">5</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>executionSettings <span class="ot">&lt;-</span> Strategus<span class="sc">::</span><span class="fu">createCdmExecutionSettings</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">connectionDetailsReference =</span> <span class="st">"1M filtered Synthea"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">workDatabaseSchema =</span> <span class="st">"main"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cdmDatabaseSchema =</span> <span class="st">"main"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cohortTableNames =</span> CohortGenerator<span class="sc">::</span><span class="fu">getCohortTableNames</span>(<span class="st">"example_cohort"</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">workFolder =</span> <span class="st">"strategusWorkFolder"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">resultsFolder =</span> <span class="st">"strategusResultsFolder"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">minCellCount =</span> <span class="dv">5</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>We provide several folders on the local file system where Strategus can write. We also need to set an environmental variable where the Strategus modules can be instantiated. This variable likely only needs to be set once. Multiple studies can use the same folder, and if a module was already previously instantiated, it won’t need to be instantiated again.</p>
+<p>This environmental variable needs to either be specified system-wide (in your operating system), or added to your <code>.renviron</code> file. The easiest way to add it to <code>.renviron</code> is:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="st">"INSTANTIATED_MODULES_FOLDER"</span> <span class="ot">=</span> <span class="st">"strategusModules"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"usethis"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>and then add <code>INSTANTIATED_MODULES_FOLDER = '~/StrategusModules'</code>, where you should replace <code>~/StrategusModules</code> with a path on your local machine. Save and make sure to restart R for the environmental variable to take effect</p>
+<p>Finally, we can call <code>execute()</code> to execute the study. This will first download and instantiate all specified Strategus modules. After that, the modules are executed, and results will be written as CSV files to the <code>resultsFolder</code> we specified earlier:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Strategus<span class="sc">::</span><span class="fu">execute</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysisSpecifications =</span> analysisSpecifications,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">executionSettings =</span> executionSettings,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">keyringName =</span> <span class="cn">NULL</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Strategus<span class="sc">::</span><span class="fu">execute</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysisSpecifications =</span> analysisSpecifications,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">executionSettings =</span> executionSettings,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">keyringName =</span> <span class="cn">NULL</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Now that you’ve execute the study, you can find all the results in the <code>strategusResultsFolder</code> you specified earlier. You can inspect the CSV files yourself, share the CSV files with others, or you can upload the files to a database using the <code>ResultsModelManader</code> package, and view those results in a Shiny app using the <code>ShinyAppBuilder</code> package. However, that is beyond the scope of this tutorial</p>
 </section>
 </section>
 

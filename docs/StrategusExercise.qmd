@@ -9,7 +9,7 @@ In this example, we'll execute an incidence rate study using the Strategus packa
 
 # Download example database
 
-For this exercise we'll use a larger simulated database. Please download the data from [here](https://drive.google.com/file/d/1hH9k0Lf3B8iutQT7U-A5Ii7g9proNWZW/view?usp=sharing). The file is approximately 3.5GB.
+For this exercise we'll use a larger simulated database. Please download the data from [here](https://drive.google.com/file/d/1l5wq57fAslnoFR2umFQvVZbDiq5IK0UF/view?usp=sharing). The file is approximately 2.3GB. Extract the file after downloading.
 
 # Installation
 
@@ -95,7 +95,7 @@ By default, the first cohort will get cohort ID 1, the second ID 2, etc.
 Next, we use the cohort definitions to create the specifications for the `CohortGeneratorModule`:
 
 ```{r}
-source("https://raw.githubusercontent.com/OHDSI/CohortGeneratorModule/v0.3.0/SettingsFunctions.R")
+source("https://raw.githubusercontent.com/OHDSI/CohortGeneratorModule/v0.4.0/SettingsFunctions.R")
 # Currently there's a mismatch in types. See https://github.com/OHDSI/CohortGenerator/issues/146
 cohortDefinitionSet$cohortId <- as.numeric(cohortDefinitionSet$cohortId)
 
@@ -111,7 +111,7 @@ Note that the cohort specifications aren't part of the CohortGeneratorModule spe
 Next, we must specify how the incidence rates are computed, and for which cohorts:
 
 ```{r}
-source("https://raw.githubusercontent.com/OHDSI/CohortIncidenceModule/v0.4.0/SettingsFunctions.R")
+source("https://raw.githubusercontent.com/OHDSI/CohortIncidenceModule/v0.4.1/SettingsFunctions.R")
 
 # Target cohort is hypertension:
 targetList <- list(CohortIncidence::createCohortRef(
@@ -180,10 +180,15 @@ analysisSpecifications <- ParallelLogger::loadSettingsFromJson("studySpecificati
 
 We also need to create execution settings. These tell Strategus how to connect to the database, and where to write the results.
 
-Strategus currently uses `keyring` to share the database credentials between modules. This will likely be removed in the future, but for now, this means we must first store the credentials in keyring using the `storeConnectionDetails()` function:
+Strategus currently uses `keyring` to share the database credentials between modules. This will likely be removed in the future, but for now, this means we must first store the credentials in keyring using the `storeConnectionDetails()` function.
+
+Make sure to **change the value of `server` to the location of the file you downloaded**!
 
 ```{r}
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "duckdb", server = "~/Downloads/database-1M_filtered.duckdb")
+connectionDetails <- DatabaseConnector::createConnectionDetails(
+  dbms = "duckdb", 
+  server = "~/Downloads/database-1M_filtered.duckdb"
+)
 
 Strategus::storeConnectionDetails(
   connectionDetails = connectionDetails,
@@ -200,7 +205,7 @@ We use the reference string as input for the execution settings for our example 
 executionSettings <- Strategus::createCdmExecutionSettings(
   connectionDetailsReference = "1M filtered Synthea",
   workDatabaseSchema = "main",
-  cdmDatabaseSchema = "main:",
+  cdmDatabaseSchema = "main",
   cohortTableNames = CohortGenerator::getCohortTableNames("example_cohort"),
   workFolder = "strategusWorkFolder",
   resultsFolder = "strategusResultsFolder",
@@ -208,11 +213,17 @@ executionSettings <- Strategus::createCdmExecutionSettings(
 )
 ```
 
-We provide several folders on the local file system where Strategus can write. We also need to set an environmental variable where the Strategus modules can be instantiated. This variable likely only needs to be set once. Multiple studies can use the same folder, and if a module was already previously instantiated, it won't need to be instantiated again:
+We provide several folders on the local file system where Strategus can write. We also need to set an environmental variable where the Strategus modules can be instantiated. This variable likely only needs to be set once. Multiple studies can use the same folder, and if a module was already previously instantiated, it won't need to be instantiated again.
 
-```{r}
-Sys.setenv("INSTANTIATED_MODULES_FOLDER" = "strategusModules")
+This environmental variable needs to either be specified system-wide (in your operating system), or added to your `.renviron` file. The easiest way to add it to `.renviron` is:
+
+```{r eval=FALSE}
+install.packages("usethis")
+usethis::edit_r_environ()
 ```
+
+and then add `INSTANTIATED_MODULES_FOLDER = '~/StrategusModules'`, where you should replace `~/StrategusModules` with a path on your local machine. Save and make sure to restart R for the environmental variable to take effect
+
 
 Finally, we can call `execute()` to execute the study. This will first download and instantiate all specified Strategus modules. After that, the modules are executed, and results will be written as CSV files to the `resultsFolder` we specified earlier: 
 
@@ -223,3 +234,5 @@ Strategus::execute(
   keyringName = NULL
 )
 ```
+
+Now that you've execute the study, you can find all the results in the `strategusResultsFolder` you specified earlier. You can inspect the CSV files yourself, share the CSV files with others, or you can upload the files to a database using the `ResultsModelManader` package, and view those results in a Shiny app using the `ShinyAppBuilder` package. However, that is beyond the scope of this tutorial

@@ -40,3 +40,4 @@ Complete the exercises here:
 
 For this you'll need to [download the example database](https://drive.google.com/file/d/1hH9k0Lf3B8iutQT7U-A5Ii7g9proNWZW/view?usp=sharing). This may take a while, so perhaps best to initiate the download before you take a break.
 
+1.  [Designing and running a Strategus study](https://ohdsi.github.io/Tutorial-Hades/StrategusExercise.html)
