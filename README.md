@@ -13,7 +13,7 @@ This repository contains materials for tutorials on the [Health Analytics Data-t
 | 15:30 | Creating cohorts with Capr                                                   | 10                 |
 | 15:40 | Practical 3: Create Cohorts using Capr                                       | 30                 |
 | 16:10 | Strategus overview                                                           | 10                 |
-| 16:20 | Practical 4: Design and run a Stratgus study.                                | 40                 |
+| 16:20 | Practical 4: Design and run a Strategus study                                | 40                 |
 
 # Practicals
 
@@ -38,6 +38,6 @@ Complete the exercises here:
 
 ## Practical 4: Design and run a Strategus study
 
-For this you'll need to [download the example database](https://drive.google.com/file/d/1hH9k0Lf3B8iutQT7U-A5Ii7g9proNWZW/view?usp=sharing). This may take a while, so perhaps best to initiate the download before you take a break.
+For this you'll need to [download the example database](https://drive.google.com/file/d/1l5wq57fAslnoFR2umFQvVZbDiq5IK0UF/view?usp=sharing). This may take a while, so perhaps best to initiate the download before you take a break.
 
 1.  [Designing and running a Strategus study](https://ohdsi.github.io/Tutorial-Hades/StrategusExercise.html)
