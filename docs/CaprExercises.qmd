@@ -86,7 +86,7 @@ diclofenac  <- cs(
 # Inclusion criterion:
 attrition = attrition(
   "No prior NSAID exposure" = withAll(
-    exactly(0, drugExposure(nsaids), duringInterval(eventStarts(-Inf, 1)))
+    exactly(0, drugExposure(nsaids), duringInterval(eventStarts(-Inf, -1)))
   )
 )
 
@@ -148,6 +148,16 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(connectionDetails = conne
 
 cohortsGenerated
 ```
+
+# Inspect the cohorts
+
+To see that the cohorts generated successfully we can display the cohort counts:
+
+```{r}
+CohortGenerator::getCohortCounts(connectionDetails = connectionDetails, cohortDatabaseSchema = "main", cohortTable = cohortTableNames$cohortTable)
+````
+
+There should be counts in all three cohorts.
 
 # Exercises
 
