@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.6.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -63,10 +63,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="CaprExercises_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="CaprExercises_files/libs/quarto-html/anchor.min.js"></script>
 <link href="CaprExercises_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="CaprExercises_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="CaprExercises_files/libs/quarto-html/quarto-syntax-highlighting-01c78b5cd655e4cd89133cf59d535862.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="CaprExercises_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="CaprExercises_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="CaprExercises_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="CaprExercises_files/libs/bootstrap/bootstrap-ac4b9114ba5f89ad180dd7d846d20634.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -86,6 +86,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#creating-more-complex-cohorts" id="toc-creating-more-complex-cohorts" class="nav-link" data-scroll-target="#creating-more-complex-cohorts">Creating more complex cohorts</a></li>
   <li><a href="#print-friendly" id="toc-print-friendly" class="nav-link" data-scroll-target="#print-friendly">Print friendly</a></li>
   <li><a href="#generate-the-cohorts" id="toc-generate-the-cohorts" class="nav-link" data-scroll-target="#generate-the-cohorts">Generate the cohorts</a></li>
+  <li><a href="#inspect-the-cohorts" id="toc-inspect-the-cohorts" class="nav-link" data-scroll-target="#inspect-the-cohorts">Inspect the cohorts</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#answers" id="toc-answers" class="nav-link" data-scroll-target="#answers">Answers</a></li>
   </ul>
@@ -216,7 +217,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Inclusion criterion:</span></span>
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>attrition <span class="ot">=</span> <span class="fu">attrition</span>(</span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"No prior NSAID exposure"</span> <span class="ot">=</span> <span class="fu">withAll</span>(</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">exactly</span>(<span class="dv">0</span>, <span class="fu">drugExposure</span>(nsaids), <span class="fu">duringInterval</span>(<span class="fu">eventStarts</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">1</span>)))</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">exactly</span>(<span class="dv">0</span>, <span class="fu">drugExposure</span>(nsaids), <span class="fu">duringInterval</span>(<span class="fu">eventStarts</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="sc">-</span><span class="dv">1</span>)))</span>
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
@@ -265,7 +266,7 @@ Limit cohort entry events to the earliest event per person.
 
 #### 1. No prior NSAID exposure
 
-Entry events having no drug exposures of 'NSAIDS', starting between all days before and 1 days after cohort entry start date.
+Entry events having no drug exposures of 'NSAIDS', starting anytime prior to cohort entry start date.
 
 ### Cohort Exit
 
@@ -295,31 +296,34 @@ Remaining events will be combined into cohort eras if they are within 0 days of 
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">cohortDatabaseSchema =</span> <span class="st">"main"</span>,</span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">cohortTableNames =</span> cohortTableNames)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Connecting using SQLite driver</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Creating cohort tables
+<pre><code>Connecting using SQLite driver
+Creating cohort tables
+- Created table main.my_cohort_table
 - Created table main.my_cohort_table
 - Created table main.my_cohort_table_inclusion
 - Created table main.my_cohort_table_inclusion_result
 - Created table main.my_cohort_table_inclusion_stats
 - Created table main.my_cohort_table_summary_stats
 - Created table main.my_cohort_table_censor_stats
-Creating cohort tables took 0.03secs</code></pre>
+Creating cohort tables took 0.04secs</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the cohorts</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>cohortsGenerated <span class="ot">&lt;-</span> CohortGenerator<span class="sc">::</span><span class="fu">generateCohortSet</span>(<span class="at">connectionDetails =</span> connectionDetails,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cdmDatabaseSchema =</span> <span class="st">"main"</span>,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cohortDatabaseSchema =</span> <span class="st">"main"</span>,</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cohortTableNames =</span> cohortTableNames,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cohortDefinitionSet =</span> cohortsToCreate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the cohorts</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>cohortsGenerated <span class="ot">&lt;-</span> CohortGenerator<span class="sc">::</span><span class="fu">generateCohortSet</span>(<span class="at">connectionDetails =</span> connectionDetails,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cdmDatabaseSchema =</span> <span class="st">"main"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cohortDatabaseSchema =</span> <span class="st">"main"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cohortTableNames =</span> cohortTableNames,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">cohortDefinitionSet =</span> cohortsToCreate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Connecting using SQLite driver</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Initiating cluster consisting only of main thread
-1/3- Generating cohort: gibleedCohort
-
+<pre><code>Initiating cluster consisting only of main thread</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>1/3- Generating cohort: gibleedCohort (id = 1)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
   |                                                                            
   |                                                                      |   0%
   |                                                                            
@@ -378,11 +382,11 @@ Creating cohort tables took 0.03secs</code></pre>
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Executing SQL took 0.014 secs</code></pre>
+<pre><code>Executing SQL took 0.0512 secs
+2/3- Generating cohort: celecoxibCohort (id = 2)</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>2/3- Generating cohort: celecoxibCohort
-
+<pre><code>
   |                                                                            
   |                                                                      |   0%
   |                                                                            
@@ -507,11 +511,11 @@ Creating cohort tables took 0.03secs</code></pre>
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Executing SQL took 0.043 secs</code></pre>
+<pre><code>Executing SQL took 0.234 secs
+3/3- Generating cohort: diclofenacCohort (id = 3)</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>3/3- Generating cohort: diclofenacCohort
-
+<pre><code>
   |                                                                            
   |                                                                      |   0%
   |                                                                            
@@ -636,23 +640,43 @@ Creating cohort tables took 0.03secs</code></pre>
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Executing SQL took 0.0335 secs</code></pre>
+<pre><code>Executing SQL took 0.168 secs</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Generating cohort set took 0.21 secs</code></pre>
+<pre><code>Generating cohort set took 0.73 secs</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cohortsGenerated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cohortsGenerated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  cohortId       cohortName generationStatus           startTime
-1        1    gibleedCohort         COMPLETE 2024-05-27 11:33:12
-2        2  celecoxibCohort         COMPLETE 2024-05-27 11:33:12
-3        3 diclofenacCohort         COMPLETE 2024-05-27 11:33:12
+1        1    gibleedCohort         COMPLETE 2025-02-04 16:47:43
+2        2  celecoxibCohort         COMPLETE 2025-02-04 16:47:44
+3        3 diclofenacCohort         COMPLETE 2025-02-04 16:47:44
               endTime
-1 2024-05-27 11:33:12
-2 2024-05-27 11:33:12
-3 2024-05-27 11:33:12</code></pre>
+1 2025-02-04 16:47:43
+2 2025-02-04 16:47:44
+3 2025-02-04 16:47:44</code></pre>
 </div>
 </div>
+</section>
+<section id="inspect-the-cohorts" class="level1">
+<h1>Inspect the cohorts</h1>
+<p>To see that the cohorts generated successfully we can display the cohort counts:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>CohortGenerator<span class="sc">::</span><span class="fu">getCohortCounts</span>(<span class="at">connectionDetails =</span> connectionDetails, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">cohortDatabaseSchema =</span> <span class="st">"main"</span>, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">cohortTable =</span> cohortTableNames<span class="sc">$</span>cohortTable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Connecting using SQLite driver
+Counting cohorts took 0.0508 secs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  cohortId cohortEntries cohortSubjects
+1        1           479            479
+2        2          1800           1800
+3        3           830            830</code></pre>
+</div>
+</div>
+<p>There should be counts in all three cohorts.</p>
 </section>
 <section id="exercises" class="level1">
 <h1>Exercises</h1>
@@ -662,24 +686,24 @@ Creating cohort tables took 0.03secs</code></pre>
 <section id="answers" class="level1">
 <h1>Answers</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>essentialHypertension <span class="ot">&lt;-</span> <span class="fu">cs</span>(</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">descendants</span>(<span class="dv">320128</span>),</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Essential hypertension"</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>sbp <span class="ot">&lt;-</span> <span class="fu">cs</span>(<span class="dv">3004249</span>, <span class="at">name =</span> <span class="st">"SBP"</span>)</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>dbp <span class="ot">&lt;-</span> <span class="fu">cs</span>(<span class="dv">3012888</span>, <span class="at">name =</span> <span class="st">"DBP"</span>)</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>hypertensionCohort <span class="ot">&lt;-</span> <span class="fu">cohort</span>(</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">entry =</span> <span class="fu">entry</span>(</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">conditionOccurrence</span>(essentialHypertension),</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">measurement</span>(sbp, <span class="fu">valueAsNumber</span>(<span class="fu">gte</span>(<span class="dv">130</span>)), <span class="fu">unit</span>(<span class="dv">8876</span>)),</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">measurement</span>(dbp, <span class="fu">valueAsNumber</span>(<span class="fu">gte</span>(<span class="dv">80</span>)), <span class="fu">unit</span>(<span class="dv">8876</span>))</span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">exit =</span> <span class="fu">exit</span>(</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">endStrategy =</span> <span class="fu">observationExit</span>()</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>essentialHypertension <span class="ot">&lt;-</span> <span class="fu">cs</span>(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">descendants</span>(<span class="dv">320128</span>),</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Essential hypertension"</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>sbp <span class="ot">&lt;-</span> <span class="fu">cs</span>(<span class="dv">3004249</span>, <span class="at">name =</span> <span class="st">"SBP"</span>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>dbp <span class="ot">&lt;-</span> <span class="fu">cs</span>(<span class="dv">3012888</span>, <span class="at">name =</span> <span class="st">"DBP"</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>hypertensionCohort <span class="ot">&lt;-</span> <span class="fu">cohort</span>(</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">entry =</span> <span class="fu">entry</span>(</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">conditionOccurrence</span>(essentialHypertension),</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">measurement</span>(sbp, <span class="fu">valueAsNumber</span>(<span class="fu">gte</span>(<span class="dv">130</span>)), <span class="fu">unit</span>(<span class="dv">8876</span>)),</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">measurement</span>(dbp, <span class="fu">valueAsNumber</span>(<span class="fu">gte</span>(<span class="dv">80</span>)), <span class="fu">unit</span>(<span class="dv">8876</span>))</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">exit =</span> <span class="fu">exit</span>(</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">endStrategy =</span> <span class="fu">observationExit</span>()</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
@@ -720,18 +744,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -763,7 +776,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -771,7 +804,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
@@ -868,7 +901,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
