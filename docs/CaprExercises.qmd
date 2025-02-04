@@ -154,7 +154,9 @@ cohortsGenerated
 To see that the cohorts generated successfully we can display the cohort counts:
 
 ```{r}
-CohortGenerator::getCohortCounts(connectionDetails = connectionDetails, cohortDatabaseSchema = "main", cohortTable = cohortTableNames$cohortTable)
+CohortGenerator::getCohortCounts(connectionDetails = connectionDetails, 
+                                 cohortDatabaseSchema = "main", 
+                                 cohortTable = cohortTableNames$cohortTable)
 ````
 
 There should be counts in all three cohorts.
