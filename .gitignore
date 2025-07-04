@@ -1,4 +1,7 @@
+.vscode/
+.env
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+ZscalerRootCA.crt

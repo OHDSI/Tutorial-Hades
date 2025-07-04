@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  tutorialhades:
+    image: ohdsi/tutorialhades:1.0.0
+    env_file: .env
+    build:
+      context: .
+      args:
+        APP_NAME: TutorialHades
+    ports:
+      - "3838:3838"
