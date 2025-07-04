@@ -26,8 +26,8 @@ RUN apt-get update && \
 
 # install required R packages - fail the build if there are any missing dependencies
 RUN R -e ' \
-  install.packages(c("remotes", "rJava", "dplyr", "DatabaseConnector", "ggplot2", "plotly", "shinyWidgets", "shiny"), repos="http://cran.rstudio.com/"); \
-  pkgs <- c("remotes", "rJava", "dplyr", "DatabaseConnector", "ggplot2", "plotly", "shinyWidgets", "shiny"); \
+  install.packages(c("remotes", "rJava", "dplyr", "DatabaseConnector", "ggplot2", "plotly", "shinyWidgets", "shiny", "stringi"), repos="http://cran.rstudio.com/"); \
+  pkgs <- c("remotes", "rJava", "dplyr", "DatabaseConnector", "ggplot2", "plotly", "shinyWidgets", "shiny", "stringi"); \
   sapply(pkgs, function(pkg) { \
     if (!require(pkg, character.only = TRUE, quietly = TRUE)) { \
       stop(paste("Package", pkg, "failed to load")) \
