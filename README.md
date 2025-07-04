@@ -24,8 +24,9 @@ You can do the practicals on your own laptop.
 
 ## Exercise 1: Design a Strategus study
 
-...
-
+Download [this slidedeck](https://github.com/OHDSI/Tutorial-Hades/blob/main/slides/DesignAStrategusStudy.pptx) and follow the instructions. 
+Write down your answers, and ask the faculty whether you were correct.
+For bonus points you can try to design your cohorts in [ATLAS](https://atlas-demo.ohdsi.org/).
 
 ## Exercise 2: Run a Strategus study
 
